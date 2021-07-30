@@ -65,6 +65,38 @@ bool cg_quit(arg_t _)
 	exit(EXIT_SUCCESS);
 }
 
+bool cg_magic_enter(arg_t _) {
+	if (options->sel_and_exit) {
+		mark_image(fileidx, !(files[fileidx].flags & FF_MARK));
+		unsigned int i;
+
+		if (options->to_stdout && markcnt > 0) {
+			for (i = 0; i < filecnt; i++) {
+				if (files[i].flags & FF_MARK)
+					printf("%s\n", files[i].name);
+			}
+		}
+		exit(EXIT_SUCCESS);
+	} else {
+		if (mode == MODE_IMAGE) {
+			if (tns.thumbs == NULL)
+				tns_init(&tns, files, &filecnt, &fileidx, &win);
+			img_close(&img, false);
+			reset_timeout(reset_cursor);
+			if (img.ss.on) {
+				img.ss.on = false;
+				reset_timeout(slideshow);
+			}
+			tns.dirty = true;
+			mode = MODE_THUMB;
+		} else {
+			load_image(fileidx);
+			mode = MODE_IMAGE;
+		}
+		return true;
+	}
+}
+
 bool cg_switch_mode(arg_t _)
 {
 	if (mode == MODE_IMAGE) {
@@ -194,7 +226,10 @@ bool cg_zoom(arg_t d)
 
 bool cg_toggle_image_mark(arg_t _)
 {
-	return mark_image(fileidx, !(files[fileidx].flags & FF_MARK));
+	if (!options->sel_and_exit) {
+		return mark_image(fileidx, !(files[fileidx].flags & FF_MARK));
+	}
+	return false;
 }
 
 bool cg_reverse_marks(arg_t _)
