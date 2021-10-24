@@ -116,11 +116,11 @@ void win_init(win_t *win)
 	res_man = XResourceManagerString(e->dpy);
 	db = res_man != NULL ? XrmGetStringDatabase(res_man) : None;
 
-	f = win_res(db, RES_CLASS ".font", "monospace-8");
+	f = win_res(db, RES_CLASS ".font", "Nimaiosevka Aile-12");
 	win_init_font(e, f);
 
-	bg = win_res(db, RES_CLASS ".background", "white");
-	fg = win_res(db, RES_CLASS ".foreground", "black");
+	bg = win_res(db, RES_CLASS ".background", "#1d2021");
+	fg = win_res(db, RES_CLASS ".foreground", "#ebdbb2");
 	win_alloc_color(e, bg, &win->bg);
 	win_alloc_color(e, fg, &win->fg);
 
